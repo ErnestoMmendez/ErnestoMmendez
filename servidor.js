@@ -1,47 +1,39 @@
-import expres from 'express';
-import mysql from 'mysql';
-import cors from 'cors';
+import e from "express";
+import express from "express";
+import mysql from "mysql";
+import cors from "cors";
 
-//CREAR LA INSTANCIA EXPRESS
+//Creamos una instancia de express
+const app=express();
+app.use(cors());
 
- const app=expres();
- app.use(cors());
+//Crear la conexión
+const conexion= mysql.createConnection({
+    server: 'localhost',
+    user: 'root',
+    password: '',
+    database: 'mascotitas' 
+})
 
- //CREAR LA CONEXION
-
- const conexion=mysql.createConnection({
-     server: 'localhost',
-     user: 'root',
-     password: '',
-     database: 'mascotitas'
- }
- );
-
- //VERIFICAR LA CONEXION
-
- conexion.connect(function (error) {
-
-    if (error) {
-        console.log("Error al conectar a la bd")
-        }else{
-            console.log("Conectado exitosamente");
-        }
-    });
-
-        // CONSULTAR LA LISTA DE MASCOTAS
-    app.get('/obtenerMascotas',(peticion, respuesta)=>{ñ
-    const sql="select * from mascotas";
-    conexion.query(sql, (error,resultado)=>{
-        if (error) return respuesta.json ({mensaje: "error"});
-        return respuesta.json ({mensaje:"Exitoso", contenido:resultado});
-    });
-    
+//Verificamos la conexion
+conexion.connect(function(error){
+    if(error){
+        console.log("Error al conectar")
+    }else{
+        console.log("Conectado exitosamente");
+    }
 });
 
+//Consultar la lista de mascotas
+app.get("/obtenermascotas",(peticion,respuesta)=>{
+    const sql = "SELECT * FROM mascotas";
+    conexion.query(sql,(error,resultado)=>{
+    if(error) return respuesta.json({Error: 'Error en la consulta'})
+    return respuesta.json({Estatus: 'Exitoso', Resultado: resultado})
+    });
+});
 
-    //INICIAMOS EL SERVIDOR
-
-    app.listen(8081, ()=>{
-        console.log("servidor iniciado")
-    });             
-    
+//Iniciamos el servidor
+app.listen(8081,()=>{
+    console.log("Servidor iniciado")
+});
